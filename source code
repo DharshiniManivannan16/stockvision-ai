@@ -1,0 +1,249 @@
+# UPLOAD THE LIBRARY
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error, r2_score 
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+# LOAD THE DATA SET 
+
+from google.colab import files
+uploaded = files.upload()
+
+#DATA EXPLORATION 
+
+file_path = '/content/TESLA.csv'  # Path to your uploaded TESLA.csv file
+data = pd.read_csv(file_path)
+
+# Step 2: Check the first few rows to get an overview of the data
+print("First 5 rows of the dataset:")
+print(data.head())
+
+# Step 3: Check the column names to ensure you have the necessary features
+print("\nColumn names in the dataset:")
+print(data.columns)
+
+# Step 4: Check for missing values in the dataset
+print("\nMissing values in each column:")
+print(data.isnull().sum())
+
+# Step 5: Check data types of each column to ensure they are correct
+print("\nData types of each column:")
+print(data.dtypes)
+
+# Step 6: Summary Statistics (mean, median, min, max, etc.)
+print("\nSummary statistics of the dataset:")
+print(data.describe())
+
+# Step 7: Check for duplicate entries
+print("\nNumber of duplicate rows in the dataset:")
+print(data.duplicated().sum())
+
+# Step 8: Check if the 'Date' column is in the correct format (if present)
+if 'Date' in data.columns:
+    print("\nChecking the data type of the 'Date' column:")
+    print(pd.to_datetime(data['Date'], errors='coerce').dtypes)
+
+# Step 9: Display basic info about the dataset
+print("\nDataset Info (non-null counts, data types, etc.):")
+print(data.info())
+
+#Check for Missing Values and Duplicates
+
+# Step 2: Check for missing values in the dataset
+print("Missing values in each column:")
+print(data.isnull().sum())
+
+# Step 3: Check for duplicate rows in the dataset
+print("\nNumber of duplicate rows in the dataset:")
+print(data.duplicated().sum())
+
+#Visualize a Few Features
+
+print(data.columns)  # Check column names
+print(data.head())   # Preview first few rows
+
+# Step 3: Visualize a Few Features
+# Ensure the correct column names for features (some might have multi-level columns)
+if 'Open' in data.columns:
+    open_prices = data['Open'].values
+else:
+    open_prices = None
+
+if 'High' in data.columns:
+    high_prices = data['High'].values
+else:
+    high_prices = None
+
+if 'Low' in data.columns:
+    low_prices = data['Low'].values
+else:
+    low_prices = None
+
+if 'Close' in data.columns:
+    close_prices = data['Close'].values
+else:
+    close_prices = None
+
+if 'Volume' in data.columns:
+    volume = data['Volume'].values
+else:
+    volume = None
+
+# Plot the features if they exist
+plt.figure(figsize=(14, 10))
+
+# Plot Close Price
+if close_prices is not None:
+    plt.subplot(3, 2, 1)
+    plt.plot(data['Date'], close_prices, label='Close Price', color='blue')
+    plt.title('Close Price')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+
+# Plot Open Price if available
+if open_prices is not None:
+    plt.subplot(3, 2, 2)
+    plt.plot(data['Date'], open_prices, label='Open Price', color='green')
+    plt.title('Open Price')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+
+# Plot High Price if available
+if high_prices is not None:
+    plt.subplot(3, 2, 3)
+    plt.plot(data['Date'], high_prices, label='High Price', color='red')
+    plt.title('High Price')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+
+# Plot Low Price if available
+if low_prices is not None:
+    plt.subplot(3, 2, 4)
+    plt.plot(data['Date'], low_prices, label='Low Price', color='orange')
+    plt.title('Low Price')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+
+# Plot Volume if available
+if volume is not None:
+    plt.subplot(3, 2, 5)
+    plt.plot(data['Date'], volume, label='Volume', color='purple')
+    plt.title('Volume')
+    plt.xlabel('Date')
+    plt.ylabel('Volume')
+
+plt.tight_layout()
+plt.show()
+
+#BAR CHART
+
+dataset_path = '/content/TESLA.csv'
+df = pd.read_csv(dataset_path)
+
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Set the 'Date' column as the index
+df.set_index('Date', inplace=True)
+
+# Rename 'price' column to 'Open'
+df.rename(columns={'price': 'Open'}, inplace=True)  # This line is added
+
+
+# Select a subset of data (e.g., the first 30 days)
+subset_df = df.head(30)
+
+# Plot a bar chart for selected features: 'Open', 'High', 'Low', and 'Volume'
+plt.figure(figsize=(14, 8))
+
+# Plot Open Price
+plt.bar(subset_df.index, subset_df['Open'], label='Open Price', color='blue', alpha=0.6)
+
+# Plot High Price
+plt.bar(subset_df.index, subset_df['High'], label='High Price', color='green', alpha=0.6)
+
+# Plot Low Price
+plt.bar(subset_df.index, subset_df['Low'], label='Low Price', color='orange', alpha=0.6)
+
+# Plot Volume
+plt.bar(subset_df.index, subset_df['Volume'] / 1e6, label='Volume (in millions)', color='purple', alpha=0.6)
+
+# Add labels and title
+plt.title('Tesla Stock - Bar Chart for Features (Open, High, Low, Volume)')
+plt.xlabel('Date')
+plt.ylabel('Price / Volume')
+plt.xticks(rotation=45)  # Rotate date labels for better readability
+plt.legend()
+
+# Display the chart
+plt.tight_layout()
+plt.show()
+
+dataset_path = '/content/TESLA.csv'
+df = pd.read_csv(dataset_path)
+
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+
+# Check if 'Open' column exists, if not, rename 'price' to 'Open'
+if 'Open' not in df.columns:
+    df.rename(columns={'price': 'Open'}, inplace=True)
+
+# Select features to visualize correlation
+features = ['Open', 'High', 'Low', 'Close', 'Volume']
+
+# Calculate correlation matrix
+correlation_matrix = df[features].corr()
+
+# Plot the correlation matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5, cbar=True)
+plt.title('Correlation Matrix of Selected Features')
+plt.show()
+
+#One-Hot Encoding
+
+data = pd.DataFrame({
+    'Color': ['Red', 'Blue', 'Green', 'Blue', 'Green', 'Red']
+})
+
+# Print original data
+print("Original Data:")
+print(data)
+
+# Apply One-Hot Encoding using pd.get_dummies()
+data_encoded = pd.get_dummies(data, columns=['Color'], drop_first=True)
+
+# Print the result
+print("\nOne-Hot Encoded Data:")
+print(data_encoded)
+
+#Create the Streamlit Python File (app.py)
+
+# Check the data types and null values
+print("\nData Information:")
+print(df.info())
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# Statistical Summary
+print("\nStatistical Summary:")
+print(df.describe())
+
+# Convert Date column to datetime and set it as index
+# Check if 'Date' is not already the index
+if 'Date' in df.columns:
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.set_index('Date', inplace=True)
+
+# ... (rest of your code)
+
