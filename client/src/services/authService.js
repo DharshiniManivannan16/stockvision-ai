@@ -30,7 +30,7 @@ export const login = (email, password) => {
 }
 
 export const googleLogin = () => {
-  return signInWithPopup(auth, provider)
+  return signInWithRedirect(auth, provider)
 }
 
 export const logout = () => {

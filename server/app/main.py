@@ -5,7 +5,7 @@ import random
 
 app = FastAPI()
 
-# CORS setup
+# ✅ CORS setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,55 +14,86 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ Home Route
 @app.get("/")
 def home():
     return {
         "message": "StockVision AI Backend Running"
     }
 
+
+# ✅ Stock Data Route
 @app.get("/stock/{ticker}")
 def get_stock_data(ticker: str):
 
-    stock = yf.Ticker(ticker)
+    try:
 
-    hist = stock.history(period="7d")
+        stock = yf.Ticker(ticker)
 
-    data = []
+        hist = stock.history(period="7d")
 
-    for index, row in hist.iterrows():
+        # No data check
+        if hist.empty:
+            return {
+                "error": "No stock data found"
+            }
 
-        data.append({
-            "date": str(index.date()),
-            "price": round(row["Close"], 2)
-        })
+        data = []
 
-    return data
+        for index, row in hist.iterrows():
+
+            data.append({
+                "date": str(index.date()),
+                "price": round(float(row["Close"]), 2)
+            })
+
+        return data
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }
 
 
-# 🔥 ADD THIS BELOW
+# ✅ AI Prediction Route
 @app.get("/predict/{ticker}")
 def predict_stock(ticker: str):
 
-    stock = yf.Ticker(ticker)
+    try:
 
-    hist = stock.history(period="7d")
+        stock = yf.Ticker(ticker)
 
-    last_price = hist["Close"].iloc[-1]
+        hist = stock.history(period="7d")
 
-    predictions = []
+        # No data check
+        if hist.empty:
+            return {
+                "error": "No prediction data found"
+            }
 
-    for i in range(1, 8):
+        last_price = float(hist["Close"].iloc[-1])
 
-        predicted_price = round(
-            last_price + random.uniform(-20, 20),
-            2
-        )
+        predictions = []
 
-        predictions.append({
-            "day": f"Day {i}",
-            "price": predicted_price
-        })
+        for i in range(1, 8):
 
-        last_price = predicted_price
+            predicted_price = round(
+                last_price + random.uniform(-20, 20),
+                2
+            )
 
-    return predictions
+            predictions.append({
+                "day": f"Day {i}",
+                "price": predicted_price
+            })
+
+            last_price = predicted_price
+
+        return predictions
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }

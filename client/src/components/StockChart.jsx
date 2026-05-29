@@ -9,7 +9,7 @@ import {
 } from "recharts"
 
 import { useEffect, useState } from "react"
-
+import API_URL from "../utils/api";
 import axios from "axios"
 
 function StockChart() {
@@ -31,7 +31,7 @@ function StockChart() {
     try {
 
       const response = await axios.get(
-        `http://127.0.0.1:8000/stock/${stockName}`
+        `${API_URL}/stock/${stockName}`
       )
 
       const formattedData = response.data.map((item) => ({
