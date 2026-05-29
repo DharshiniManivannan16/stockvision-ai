@@ -9,8 +9,8 @@ import {
 } from "recharts"
 
 import { useEffect, useState } from "react"
-
 import axios from "axios"
+import API_URL from "../utils/api"
 
 function PredictionChart() {
 
@@ -27,7 +27,7 @@ function PredictionChart() {
     try {
 
       const response = await axios.get(
-        "http://127.0.0.1:8000/predict/RELIANCE.NS"
+        `${API_URL}/predict/RELIANCE.NS`
       )
 
       setPredictionData(response.data)
@@ -42,10 +42,10 @@ function PredictionChart() {
 
   return (
 
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 h-[450px] mt-10">
+    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 h-[500px]">
 
       <h2 className="text-white text-2xl font-bold mb-6">
-        AI Prediction Chart
+        AI Prediction
       </h2>
 
       <ResponsiveContainer width="100%" height="80%">
@@ -71,7 +71,7 @@ function PredictionChart() {
           <Line
             type="monotone"
             dataKey="price"
-            stroke="#3b82f6"
+            stroke="#22c55e"
             strokeWidth={3}
           />
 
